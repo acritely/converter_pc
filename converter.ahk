@@ -7,9 +7,17 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+MsgBox, 0, Converter 1.0, Welcome to Greek / English Keyboard converter.`n`n To convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `n Control-e --> to convert English text to Greek.`n`n Press Control-Shift-g to exit.`n Send bugs to converter@acrite.ly Enjoy! -Sean Hannon 2015
+
 ; trigger
 Hotkey, ^g, ProcessEN2GR ;for convert english to greek
 Hotkey, ^e, ProcessGR2EN ;for convert greek to english
+Hotkey, ^+g, Exit0
+return
+
+Exit0:
+MsgBox, 0, Converter 1.0, Greek / English keyboard converter will be closed.
+ExitApp 0
 return
 
 ProcessGR2EN:
