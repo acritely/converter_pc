@@ -1,11 +1,13 @@
 ﻿; Sean Hannon 2015
 ; sean@acrite.ly
 ; Script to switch between keyboard inputs (greek/english) 
+; This software is licensed using the GNU General Public License v2.0
+; See attached license.txt file.
 
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+#NoEnv
+;#Warn
+SendMode Input
+SetWorkingDir %A_ScriptDir%
 
 Menu, tray, NoStandard
 Menu, tray, DeleteAll
@@ -608,7 +610,7 @@ convertchar_EN2GR(token) {
 	}
 }	
 
-/*
+/* char reference:
 ; U+0374 	ʹ 	Greek Numeral Sign 	0371
 ; U+0375 	͵ 	Greek Lower Numeral Sign 	0372
 ; U+037A 	ͺ 	Greek Ypogegrammeni 	0373
