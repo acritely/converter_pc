@@ -1,11 +1,9 @@
-﻿; Sean Hannon 2015
-; sean@acrite.ly
+﻿; Converter 2.0
 ; Script to switch between keyboard inputs (greek/english) 
-; This software is licensed using the GNU General Public License v2.0
-; See attached license.txt file.
+; Sean Hannon 2015
+; sean@acrite.ly
 
 #NoEnv
-;#Warn
 SendMode Input
 SetWorkingDir %A_ScriptDir%
 
@@ -25,19 +23,31 @@ Hotkey, ^+g, Exit0
 return
 
 InfoMenuHandler:
-MsgBox, 0, Converter 1.1, Welcome to Greek / English Keyboard converter.`n`n To convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `n Control-e --> to convert English text to Greek.`n`n Press Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2015
+MsgBox, 0, Converter 2.0, Welcome to Greek / English Keyboard converter.`n`n To convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `n Control-e --> to convert English text to Greek.`n`n Press Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2015
 return
 
 Exit0:
-MsgBox, 0, Converter 1.1, Greek / English keyboard converter will be closed.
+MsgBox, 0, Converter 2.0, Greek / English keyboard converter closing...
 ExitApp 0
 return
 
 ProcessGR2EN:
+
+count0 := 0
+
+Loop
+{
+    if(count0 == 20){
+			;MsgBox exit condition reached...
+			break 
+		}
+
+		Send, +{vk25}
+		count0 := count0+1
+}
 ;	select and copy text in active window
 ClipBoard = 
-Send, ^{vk41}   ; Ctrl-A
-Send, ^{vk43}   ; Ctrl-C
+Send, ^{vk58}   ; Ctrl-X
 ClipWait
 clip0 := ClipBoard
 
@@ -48,7 +58,7 @@ newText := ConvertGR2EN(clip0)
 ;    return to buffer
 ClipBoard := newText 
 Send, ^{vk56}   ; Ctrl-V
-Send, {vk27}    ; Right arrow to deselect text... 
+Send, {vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
 
 ;TrayTip, My Title, Multiline`nText, 20, 17
 #Persistent
@@ -57,10 +67,22 @@ SetTimer, RemoveTrayTip, 5000
 return
 
 ProcessEN2GR:
+
+count0 := 0
+
+Loop
+{
+    if(count0 == 20){
+			;MsgBox exit condition reached...
+			break 
+		}
+
+		Send, +{vk25}
+		count0 := count0+1
+}
 ;	select and copy text in active window
 ClipBoard = 
-Send, ^{vk41}   ; Ctrl-A
-Send, ^{vk43}   ; Ctrl-C
+Send, ^{vk58}   ; Ctrl-X
 ClipWait
 clip0 := ClipBoard
 
@@ -74,7 +96,7 @@ newText := ConvertEN2GR(clip0)
 ;    return to buffer
 ClipBoard := newText 
 Send, ^{vk56}   ; Ctrl-V
-Send, {vk27}    ; Right arrow to deselect text... 
+Send, {vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
 
 #Persistent
 TrayTip, Converted to Greek text!, %A_Space%
@@ -610,7 +632,7 @@ convertchar_EN2GR(token) {
 	}
 }	
 
-/* char reference:
+/*
 ; U+0374 	ʹ 	Greek Numeral Sign 	0371
 ; U+0375 	͵ 	Greek Lower Numeral Sign 	0372
 ; U+037A 	ͺ 	Greek Ypogegrammeni 	0373
