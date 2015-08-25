@@ -1,4 +1,4 @@
-﻿; Converter 2.0
+﻿; Converter 2.1
 ; Script to switch between keyboard inputs (greek/english) 
 ; Sean Hannon 2015
 ; sean@acrite.ly
@@ -23,33 +23,47 @@ Hotkey, ^+g, Exit0
 return
 
 InfoMenuHandler:
-MsgBox, 0, Converter 2.0, Welcome to Greek / English Keyboard converter.`n`n To convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `n Control-e --> to convert English text to Greek.`n`n Press Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2015
+MsgBox, 0, Converter 2.1, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2015
 return
 
 Exit0:
-MsgBox, 0, Converter 2.0, Greek / English keyboard converter closing...
+MsgBox, 0, Converter 2.1, Greek / English keyboard converter closing...
 ExitApp 0
 return
 
 ProcessGR2EN:
-
-count0 := 0
-
-Loop
-{
-    if(count0 == 20){
-			;MsgBox exit condition reached...
-			break 
-		}
-
-		Send, +{vk25}
-		count0 := count0+1
-}
-;	select and copy text in active window
+;   test if text highlighted
 ClipBoard = 
-Send, ^{vk58}   ; Ctrl-X
-ClipWait
-clip0 := ClipBoard
+Send, ^{vk43} ; Ctrl-C
+
+if(ClipBoard = "") ;no text selected, highlight 20 chars
+{
+	count0 := 0
+
+	Loop
+	{
+		if(count0 == 20){
+				;MsgBox exit condition reached...
+				break 
+			}
+
+			Send, +{vk25}
+			count0 := count0+1
+	}
+	;	select and copy text in active window
+	ClipBoard = 
+	Send, ^{vk58}   ; Ctrl-X
+	ClipWait
+	clip0 := ClipBoard
+}
+else
+{
+;	copy selected text in active window
+	ClipBoard = 
+	Send, ^{vk58}   ; Ctrl-X
+	ClipWait
+	clip0 := ClipBoard
+}
 
 ;	convert text in clipboard buffer
 newText := ConvertGR2EN(clip0)
@@ -67,7 +81,12 @@ SetTimer, RemoveTrayTip, 5000
 return
 
 ProcessEN2GR:
+;   test if text highlighted
+ClipBoard = 
+Send, ^{vk43} ; Ctrl-C
 
+if(ClipBoard = "") ;no text selected, highlight 20 chars
+{
 count0 := 0
 
 Loop
@@ -85,6 +104,16 @@ ClipBoard =
 Send, ^{vk58}   ; Ctrl-X
 ClipWait
 clip0 := ClipBoard
+
+}
+else
+{
+;	copy selected text in active window
+	ClipBoard = 
+	Send, ^{vk58}   ; Ctrl-X
+	ClipWait
+	clip0 := ClipBoard
+}
 
 ;StringLen, count0, clip0 
 ;MsgBox, Captured %count0% characters:`r`n "%clip0%"
