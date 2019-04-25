@@ -3,34 +3,36 @@
 ; Sean Hannon 2020
 ; converter@acrite.ly
 
+;Begin script
 #NoEnv
 SendMode Input
 SetWorkingDir %A_ScriptDir%
 
-Menu, tray, NoStandard
-Menu, tray, DeleteAll
-Menu, tray, add, &About, InfoMenuHandler
-Menu, tray, add  ; Creates a separator line.
-Menu, tray, add, &Exit, Exit0
+;	Create tray menu
+	Menu, tray, NoStandard
+	Menu, tray, DeleteAll
+	Menu, tray, add, &About, InfoMenuHandler
+	Menu, tray, add  ; separator line
+	Menu, tray, add, &Exit, Exit0
 
-TrayTip, ΕΛ<->EN keyboard converter started!,%A_Space%
-SetTimer, RemoveTrayTip, 5000
+	TrayTip, ΕΛ<->EN keyboard converter started!,%A_Space%
+	SetTimer, RemoveTrayTip, 3000
 
-; trigger
-Hotkey, ^g, ProcessEN2GR ;for convert english to greek
-Hotkey, ^e, ProcessGR2EN ;for convert greek to english
-Hotkey, ^+g, Exit0
-Hotkey, ^+e, Exit0
+; 	Trigger keys
+	Hotkey, ^g, ProcessEN2GR ;for convert english to greek
+	Hotkey, ^e, ProcessGR2EN ;for convert greek to english
+	Hotkey, ^+g, Exit0
+	Hotkey, ^+e, Exit0
 return
 
 InfoMenuHandler:
-MsgBox, 0, Converter 2.2, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2020
+	MsgBox, 0, Converter 2.2, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2020
 return
 
 Exit0:
-TrayTip, ΕΛ<->EN keyboard converter closing... ,%A_Space%
-SetTimer, RemoveTrayTip, 1000
-ExitApp 0
+	TrayTip, ΕΛ<->EN keyboard converter closing... ,%A_Space%
+	SetTimer, RemoveTrayTip, 500
+	ExitApp 0
 return
 
 RemoveTrayTip:
@@ -123,6 +125,9 @@ ProcessGR2EN:
 			Send, ^{x}  	   ; cut
 			ClipWait, 0.1
 			clip0 := ClipBoard
+			
+;			DEBUG
+;			MsgBox, Captured characters:`r`n "%clip0%"
 		}
 
 ;		convert text in clipboard buffer
@@ -156,186 +161,503 @@ ConvertGR2EN(oldText) {
 
     newText := ""
 
-	Loop, parse, oldText,
+	StringSplit, tempArray, oldText
+	textArray := Object()
+	
+	Loop %tempArray0%
 	{
-		newChar := Convertchar_GR2EN(A_LoopField)
-        newText := newText . newChar
+		textArray.Insert(tempArray%A_index%)
+	}
+	
+	index0 := 0
+	
+	count0 := count0+1
+	
+	Loop
+	{
+		if(index0 == count0){
+;			DEBUG
+;			MsgBox exit condition reached...
+			break 
+		}
+			
+;		DEBUG
+;		MsgBox, current parsing step: "%newText%.
+;		if(A_LoopField == " ")
+;			MsgBox, space!
+
+;       determine if the first character is a modifier. if so send two chars in the token		
+		if(textArray[index0] =="`'" && textArray[index0+1] !="") {  ;"'"
+        	newChar := convertchar_GR2EN(textArray[index0] . textArray[index0+1])
+        	index0++
+    	}
+    	else if(textArray[index0] == Chr(96) && textArray[index0+1] !="") {    ; "`"
+;			DEBUG
+;			MsgBox, Inside grave accent case
+    		newChar := convertchar_GR2EN(textArray[index0] . textArray[index0+1])
+        	index0++
+    	}
+    	else if(textArray[index0] =="""" && textArray[index0+1] !="") {   ; """"
+    		newChar := convertchar_GR2EN(textArray[index0] . textArray[index0+1])
+        	index0++
+    	}
+		else if(textArray[index0] =="^" && textArray[index0+1] !="") {   ; "^"
+    		newChar := convertchar_GR2EN(textArray[index0] . textArray[index0+1])
+        	index0++
+    	}
+		else if(textArray[index0] =="~" && textArray[index0+1] !="") {   ; "^"
+    		newChar := convertchar_GR2EN(textArray[index0] . textArray[index0+1])
+        	index0++
+    	}
+    	else {
+    		newChar := convertchar_GR2EN(textArray[index0])
+    	}
+		
+		index0++
+		newText := newText . newChar
     }
 	
     return newText
 }
 
-Convertchar_GR2EN(inp_char) {
-;	DEBUG
-;	MsgBox current char %inp_char%
+Convertchar_GR2EN(token) {
+	
+	StringLen, count0, token
+	
+	if(count0==2) {
+	
+		inp_char2 := SubStr(token,0,1)
+		inp_char := SubStr(token,1,1)
+	
+		if (inp_char=="`'") {
 		
-	if ( inp_char==  Chr(945))       ;"α")
-		return "a"
-	else if (inp_char== Chr(940))    ;"ά" 
-		return ";a"
-	else if (inp_char== Chr(913))    ;"Α" 
-		return "A"
-	else if (inp_char== Chr(902))    ;"Ά" 
-		return ";A"
-	else if (inp_char== Chr(946))    ;"β" 
-		return "b"
-	else if (inp_char== Chr(914))    ;"Β" 
-		return "B"
-	else if (inp_char== Chr(947))    ;"γ" 
-		return "g"
-	else if (inp_char== Chr(915))    ;"Γ" 
-		return "G"
-	else if (inp_char== Chr(948))    ;"δ" 
-		return "d"
-	else if (inp_char== Chr(916))    ;"Δ" 
-		return "D"
-	else if (inp_char== Chr(949))    ;"ε" 
-		return "e"
-	else if (inp_char== Chr(941))    ;"έ" 
-		return ";e"
-	else if (inp_char== Chr(917))    ;"Ε" 
-		return "E"
-	else if (inp_char== Chr(904))    ;"Έ" 
-		return ";E"
-	else if (inp_char== Chr(950))    ;"ζ"
-		return "z"
-	else if (inp_char== Chr(918))    ;"Ζ" 
-		return "Z"
-	else if (inp_char== Chr(951))    ;"η" 
-		return "h"
-	else if (inp_char== Chr(942))    ;"ή" 
-		return ";h"
-	else if (inp_char== Chr(919))    ;"Η" 
-		return "H"
-	else if (inp_char== Chr(905))    ;"Ή") 
-		return ";H"
-	else if (inp_char== Chr(952))    ;"θ") 
-		return "u"
-	else if (inp_char== Chr(920))    ;"Θ") 
-		return "U"
-	else if (inp_char== Chr(953))    ;"ι") 
-		return "i"
-	else if (inp_char== Chr(943))    ;"ί") 
-		return ";i"
-	else if (inp_char== Chr(970))    ;"ϊ") 
-		return ":i"
-	else if (inp_char== Chr(912))    ;"ΐ") 
-		return "Wi"
-	else if (inp_char== Chr(921))    ;"Ι") 
-		return "I"
-	else if (inp_char== Chr(906))    ;"Ί") 
-		return ";I"
-	else if (inp_char== Chr(938))    ;"Ϊ") 
-		return ":I"
-	else if (inp_char== Chr(954))    ;"κ") 
-		return "k"
-	else if (inp_char== Chr(922))    ;"Κ") 
-		return "K"
-	else if (inp_char== Chr(955))    ;"λ") 
-		return "l"
-	else if (inp_char== Chr(923))    ;"Λ") 
-		return "L"
-	else if (inp_char== Chr(956))    ;"μ") 
-		return "m"
-	else if (inp_char== Chr(924))    ;"Μ") 
-		return "M"
-	else if (inp_char== Chr(957))    ;"ν") 
-		return "n"
-	else if (inp_char== Chr(925))    ;"Ν") 
-		return "N"
-	else if (inp_char== Chr(958))    ;"ξ") 
-		return "j"
-	else if (inp_char== Chr(926))    ;"Ξ") 
-		return "J"
-	else if (inp_char== Chr(959))    ;"ο") 
-		return "o"
-	else if (inp_char== Chr(972))    ;"ό") 
-		return ";o"
-	else if (inp_char== Chr(927))    ;"Ο") 
-		return "O"
-	else if (inp_char== Chr(908))    ;"Ό") 
-		return ";O"
-	else if (inp_char== Chr(960))    ;"π") 
-		return "p"
-	else if (inp_char== Chr(928))    ;"Π") 
-		return "P"
-	else if (inp_char== Chr(961))    ;"ρ") 
-		return "r"
-	else if (inp_char== Chr(929))    ;"Ρ") 
-		return "R"
-	else if (inp_char== Chr(963))    ;"σ") 
-		return "s"
-	else if (inp_char== Chr(962))    ;"ς") 
-		return "w"
-	else if (inp_char== Chr(931))    ;"Σ") 
-		return "S"
-	else if (inp_char== Chr(964))    ;"τ") 
-		return "t"
-	else if (inp_char== Chr(932))    ;"Τ") 
-		return "T"
-	else if (inp_char== Chr(965))    ;"υ") 
-		return "y"
-	else if (inp_char== Chr(973))    ;"ύ") 
-		return ";y"
-	else if (inp_char== Chr(971))    ;"ϋ") 
-		return ":y"
-	else if (inp_char== Chr(944))    ;"ΰ") 
-		return "Wy"
-	else if (inp_char== Chr(933))    ;"Υ") 
-		return "Y"
-	else if (inp_char== Chr(910))    ;"Ύ") 
-		return ";Y"
-	else if (inp_char== Chr(939))    ;"Ϋ") 
-		return ":Y"
-	else if (inp_char== Chr(966))    ;"φ") 
-		return "f"
-	else if (inp_char== Chr(934))    ;"Φ") 
-		return "F"
-	else if (inp_char== Chr(967))    ;"χ") 
-		return "x"
-	else if (inp_char== Chr(935))    ;"Χ") 
-		return "X"
-	else if (inp_char== Chr(968))    ;"ψ") 
-		return "c"
-	else if (inp_char== Chr(936))    ;"Ψ") 
-		return "C"
-	else if (inp_char== Chr(969))    ;"ω") 
-		return "v"
-	else if (inp_char== Chr(974))    ;"ώ") 
-		return ";v"
-	else if (inp_char== Chr(937))    ;"Ω") 
-		return "V"
-	else if (inp_char== Chr(911))    ;"Ώ") 
-		return ";V"
-	else if (inp_char== Chr(59))    ;";") 
-		return "q"
-	else if (inp_char== Chr(58))    ;":") 
-		return "Q"
-;	else if (inp_char== Chr(46))    ;".") 
-;		return "."
-;	else if (inp_char== Chr(44))    ;",") 
-;		return ","
-;	else if (inp_char== Chr(47))    ;"/") 
-;		return "/"
-;	else if (inp_char== Chr(47))    ;"/") 
-;		return "\"
-;	else if (inp_char== Chr(946))    ;"[") 
-;		return "["
-;	else if (inp_char== Chr(946))    ;"]") 
-;		return "]"
-;	else if (inp_char== Chr(946))    ;"'") 
-;		return "'"		
-;	else if (inp_char== Chr(946))    ;"\n") 
-;		return ""
-	else if (inp_char==  Chr(32))    ;A_Space) 
-	{
-		space := Chr(32)
-		return %space%
+;			DEBUG
+;			MsgBox, first char is '
+			if (inp_char2==Chr(945)) {	   ;		á 'α
+				return "á"
+			}
+			else if (inp_char2==Chr(913)) { ;		Á 'Α
+				return "Á"
+			}
+			else if (inp_char2==Chr(949)) { ;		é 'ε
+				return "é"
+			}
+			else if (inp_char2==Chr(917)) { ;		É 'Ε
+				return "É"
+			}
+			else if (inp_char2==Chr(953)) { ;		í 'ι
+				return "í"
+			}
+			else if (inp_char2==Chr(921)) { ;		Í 'Ι
+				return "Í"
+			}
+			else if (inp_char2==Chr(959)) { ;		ó 'ο
+				return "ó"
+			}
+			else if (inp_char2==Chr(927)) { ;		Ó 'Ο
+				return "Ó"
+			}
+			else if (inp_char2==Chr(952)) { ;		ú 'θ
+				return "ú"
+			}
+			else if (inp_char2==Chr(920)) { ;		Ú 'Θ
+				return "Ú"
+			}
+			else if (inp_char2==Chr(965)) { ;		ý 'υ
+				return "ý"
+			}
+			else if (inp_char2==Chr(933)) { ;		Ý 'Υ
+				return "Ý"
+			}
+			else if (inp_char2==Chr(968)) { ;		ç 'ψ
+				return "ç"
+			}
+			else if (inp_char2==Chr(936)) { ;		Ç 'Ψ
+				return "Ç"
+			}
+		}
+		else if (inp_char=="``") {
+;			DEBUG
+;			MsgBox, first char is ``
+			if (inp_char2==Chr(945)){ 		;		à `α
+				return "à"
+			}
+			else if (inp_char2==Chr(913)) { ;		À `Α
+				return "À"
+			}
+			else if (inp_char2==Chr(949)) { ;		è `ε
+				return "è"
+			}
+			else if (inp_char2==Chr(917)) { ;		È `Ε
+				return "È"
+			}
+			else if (inp_char2==Chr(953)) { ;		ì `ι
+				return "ì"
+			}
+			else if (inp_char2==Chr(921)) { ;		Ì `Ι
+				return "Ì"
+			}
+			else if (inp_char2==Chr(959)) { ;		ò `ο
+				return "ò"
+			}
+			else if (inp_char2==Chr(927)) { ;		Ò `Ο
+				return "Ò"
+			}
+			else if (inp_char2==Chr(952)) { ;		ù `θ
+				return "ù"
+			}
+			else if (inp_char2==Chr(920)) { ;		Ù `Θ
+				return "Ù"
+			}
+			else if (inp_char2==Chr(965)) { ;		`y `υ
+				return "y"
+			}
+			else if (inp_char2==Chr(933)) { ;		`Y `Υ
+				return token
+			}
+			else {
+;				DEBUG
+;				MsgBox, no match found for %token%
+				return token	
+			}
+		}
+		else if (inp_char=="""") {
+			if (inp_char2==Chr(945)) { ;		ä "α
+				return "ä"
+			}
+			else if (inp_char2==Chr(913)) { ;		Ä "Α
+				return "Ä"
+			}
+			else if (inp_char2==Chr(949)) { ;		ë "ε
+				return "ë"
+			}
+			else if (inp_char2==Chr(917)) { ;		Ë "Ε
+				return "Ë"
+			}
+			else if (inp_char2==Chr(953)) { ;		ï "ι
+				return "ï"
+			}
+			else if (inp_char2==Chr(921)) { ;		Ï "Ι
+				return "Ï"
+			}
+			else if (inp_char2==Chr(959)) { ;		ö "ο
+				return "ö"
+			}
+			else if (inp_char2==Chr(927)) { ;		Ö "Ο
+				return "Ö"
+			}
+			else if (inp_char2==Chr(952)) { ;		ü "θ
+				return "ü"
+			}
+			else if (inp_char2==Chr(920)) { ;		Ü "Θ
+				return "Ü"
+			}
+			else if (inp_char2==Chr(965)) { ;		ÿ "υ
+				return "ÿ"
+			}
+			else if (inp_char2==Chr(933)) { ;		"Y "Υ
+				return token
+			}
+			else {
+				return token	
+			}
+		}
+		else if (inp_char=="^") {
+			if (inp_char2==Chr(945)) { ;		â ^α
+				return "â"
+			}
+			else if (inp_char2==Chr(913)) { ;		Â ^Α
+				return "Â"
+			}
+			else if (inp_char2==Chr(949)) { ;		ê ^ε
+				return "ê"
+			}
+			else if (inp_char2==Chr(917)) { ;		Ê ^Ε
+				return "Ê"
+			}
+			else if (inp_char2==Chr(953)) { ;		î ^ι
+				return "î"
+			}
+			else if (inp_char2==Chr(921)) { ;		Î ^Ι
+				return "Î"
+			}
+			else if (inp_char2==Chr(959)) { ;		ô ^ο
+				return "ô"
+			}
+			else if (inp_char2==Chr(927)) { ;		Ô ^Ο
+				return "Ô"
+			}
+			else if (inp_char2==Chr(952)) { ;		û ^θ
+				return "û"
+			}
+			else if (inp_char2==Chr(920)) { ;		Û ^Θ
+				return "Û"
+			}
+			else if (inp_char2==Chr(965)) { ;		^y ^υ
+				return "y"
+			}
+			else if (inp_char2==Chr(933)) { ;		^Y ^Υ
+				return token
+			}
+			else {
+				return token	
+			}
+		}
+		else if (inp_char=="~") {
+			if (inp_char2=="α") { ;		ã ~α
+				return "ã"
+			}
+			else if (inp_char2==Chr(913)) { ;		Ã ~Α
+				return "Ã"
+			}
+			else if (inp_char2==Chr(959)) { ;		õ ~ο
+				return "õ"
+			}
+			else if (inp_char2==Chr(927)) { ;		Õ ~Ο
+				return "Õ"
+			}
+			else if (inp_char2==Chr(957)) { ;		ñ ~ν
+				return "ñ"
+			}
+			else if (inp_char2==Chr(925)) { ;		Ñ ~Ν
+				return "Ñ"
+			}
+			else {
+				return token	
+			}
+		}
+		else {
+			return token	
+		}	
 	}
-	else {  
+	else {
+		inp_char := token
+	
 ;		DEBUG
-;		MsgBox, error %inp_char% not recognized.
-		return inp_char
+;		MsgBox current char %inp_char%
+
+		if ( inp_char==  Chr(945)) {      ;"α")
+			return "a"
+		}
+		else if (inp_char== Chr(940)) {    ;"ά" 
+			return ";a"
+		}
+		else if (inp_char== Chr(913)) {   ;"Α" 
+			return "A"
+		}
+		else if (inp_char== Chr(902)) {   ;"Ά" 
+			return ";A"
+		}
+		else if (inp_char== Chr(946)) {   ;"β" 
+			return "b"
+		}
+		else if (inp_char== Chr(914)) {   ;"Β" 
+			return "B"
+		}
+		else if (inp_char== Chr(947)) {   ;"γ" 
+			return "g"
+		}
+		else if (inp_char== Chr(915)) {   ;"Γ" 
+			return "G"
+		}
+		else if (inp_char== Chr(948)) {   ;"δ" 
+			return "d"
+		}
+		else if (inp_char== Chr(916)) {   ;"Δ" 
+			return "D"
+		}
+		else if (inp_char== Chr(949)) {   ;"ε" 
+			return "e"
+		}
+		else if (inp_char== Chr(941)) {   ;"έ" 
+			return ";e"
+		}
+		else if (inp_char== Chr(917)) {   ;"Ε" 
+			return "E"
+		}
+		else if (inp_char== Chr(904)) {   ;"Έ" 
+			return ";E"
+		}
+		else if (inp_char== Chr(950)) {   ;"ζ"
+			return "z"
+		}
+		else if (inp_char== Chr(918)) {   ;"Ζ" 
+			return "Z"
+		}
+		else if (inp_char== Chr(951)) {   ;"η" 
+			return "h"
+		}
+		else if (inp_char== Chr(942)) {   ;"ή" 
+			return ";h"
+		}
+		else if (inp_char== Chr(919)) {   ;"Η"
+			return "H"
+		}
+		else if (inp_char== Chr(905)) {   ;"Ή"
+			return ";H"
+		}
+		else if (inp_char== Chr(952)) {   ;"θ"
+			return "u"
+		}
+		else if (inp_char== Chr(920)) {   ;"Θ"
+			return "U"
+		}
+		else if (inp_char== Chr(953)) {   ;"ι"
+			return "i"
+		}
+		else if (inp_char== Chr(943)) {   ;"ί"
+			return ";i"
+		}
+		else if (inp_char== Chr(970)) {   ;"ϊ"
+			return ":i"
+		}
+		else if (inp_char== Chr(912)) {   ;"ΐ"
+			return "Wi"
+		}
+		else if (inp_char== Chr(921)) {   ;"Ι"
+			return "I"
+		}
+		else if (inp_char== Chr(906)) {   ;"Ί"
+			return ";I"
+		}
+		else if (inp_char== Chr(938)) {   ;"Ϊ"
+			return ":I"
+		}
+		else if (inp_char== Chr(954)) {   ;"κ"
+			return "k"
+		}
+		else if (inp_char== Chr(922)) {   ;"Κ"
+			return "K"
+		}
+		else if (inp_char== Chr(955)) {   ;"λ"
+			return "l"
+		}
+		else if (inp_char== Chr(923)) {   ;"Λ"
+			return "L"
+		}
+		else if (inp_char== Chr(956)) {   ;"μ"
+			return "m"
+		}
+		else if (inp_char== Chr(924)) {   ;"Μ"
+			return "M"
+		}
+		else if (inp_char== Chr(957)) {   ;"ν"
+			return "n"
+		}
+		else if (inp_char== Chr(925)) {   ;"Ν"
+			return "N"
+		}
+		else if (inp_char== Chr(958)) {   ;"ξ"
+			return "j"
+		}
+		else if (inp_char== Chr(926)) {   ;"Ξ"
+			return "J"
+		}
+		else if (inp_char== Chr(959)) {   ;"ο"
+			return "o"
+		}
+		else if (inp_char== Chr(972)) {   ;"ό"
+			return ";o"
+		}
+		else if (inp_char== Chr(927)) {   ;"Ο"
+			return "O"
+		}
+		else if (inp_char== Chr(908)) {   ;"Ό"
+			return ";O"
+		}
+		else if (inp_char== Chr(960)) {   ;"π"
+			return "p"
+		}
+		else if (inp_char== Chr(928)) {   ;"Π"
+			return "P"
+		}
+		else if (inp_char== Chr(961)) {   ;"ρ"
+			return "r"
+		}
+		else if (inp_char== Chr(929)) {   ;"Ρ"
+			return "R"
+		}
+		else if (inp_char== Chr(963)) {   ;"σ"
+			return "s"
+		}
+		else if (inp_char== Chr(962)) {   ;"ς"
+			return "w"
+		}
+		else if (inp_char== Chr(931)) {   ;"Σ"
+			return "S"
+		}
+		else if (inp_char== Chr(964)) {   ;"τ"
+			return "t"
+		}
+		else if (inp_char== Chr(932)) {   ;"Τ"
+			return "T"
+		}
+		else if (inp_char== Chr(965)) {   ;"υ"
+			return "y"
+		}
+		else if (inp_char== Chr(973)) {   ;"ύ"
+			return ";y"
+		}
+		else if (inp_char== Chr(971)) {   ;"ϋ"
+			return ":y"
+		}
+		else if (inp_char== Chr(944)) {   ;"ΰ"
+			return "Wy"
+		}
+		else if (inp_char== Chr(933)) {   ;"Υ"
+			return "Y"
+		}
+		else if (inp_char== Chr(910)) {   ;"Ύ"
+			return ";Y"
+		}
+		else if (inp_char== Chr(939)) {   ;"Ϋ"
+			return ":Y"
+		}
+		else if (inp_char== Chr(966)) {   ;"φ"
+			return "f"
+		}
+		else if (inp_char== Chr(934)) {   ;"Φ"
+			return "F"
+		}
+		else if (inp_char== Chr(967)) {   ;"χ"
+			return "x"
+		}
+		else if (inp_char== Chr(935)) {   ;"Χ"
+			return "X"
+		}
+		else if (inp_char== Chr(968)) {   ;"ψ"
+			return "c"
+		}
+		else if (inp_char== Chr(936)) {   ;"Ψ"
+			return "C"
+		}
+		else if (inp_char== Chr(969)) {   ;"ω"
+			return "v"
+		}
+		else if (inp_char== Chr(974)) {   ;"ώ"
+			return ";v"
+		}
+		else if (inp_char== Chr(937)) {   ;"Ω"
+			return "V"
+		}
+		else if (inp_char== Chr(911)) {   ;"Ώ"
+			return ";V"
+		}
+		else if (inp_char== Chr(59))  {  ;";"
+			return "q"
+		}
+		else if (inp_char== Chr(58))  {  ;":" 
+			return "Q"
+		}
+		else if (inp_char==  Chr(32)) {   ;A_Space 
+			space := Chr(32)
+			return %space%
+		}
+		else {  
+;			DEBUG
+;			MsgBox, error %inp_char% not recognized.
+			return inp_char
+		}
 	}
 }
 
@@ -373,7 +695,8 @@ ConvertEN2GR(oldText) {
 ;		MsgBox, current parsing step: "%newText%.
 ;		if(A_LoopField == " ")
 ;			MsgBox, space!
-		
+
+;       determine if the first character is a modifier. if so send two chars in the token		
 		if(textArray[index0] ==Chr(58) && textArray[index0+1] !="") {  ;":"
         	newChar := convertchar_EN2GR(textArray[index0] . textArray[index0+1])
         	index0++
@@ -456,8 +779,8 @@ convertchar_EN2GR(token) {
 				return "Ώ"
 			}
 		    else {
-		    		return "q"
-		    	}
+		    		return convertchar_EN2GR(inp_char2)
+		    }
 		}
 		else if (inp_char==Chr(58)) {   ;":"
 
@@ -474,8 +797,8 @@ convertchar_EN2GR(token) {
 				return "Ϋ"
 			}
 			else {
-					return "Q"
-				}
+					return convertchar_EN2GR(inp_char2)
+			}
 		}
 	    else if (inp_char=="W") {
 		    
@@ -484,7 +807,10 @@ convertchar_EN2GR(token) {
 			}
 		  	else if (inp_char2=="y") {
 				return "ΰ"
-			}	   
+			}			
+			else if (inp_char2=="I") {
+				return "΅Ι"
+			}
 		  	else {
 		  		return token
 		  	}
@@ -651,119 +977,196 @@ convertchar_EN2GR(token) {
 			return ";"
 		}
 		else if (inp_char=="Q") {
-			return ":"
+			return "`:"
 		}
-		else if (inp_char=="\n") {
+		else if (inp_char=="`n") {
 			return ""
 		}
 		else if (inp_char==" ") {
 			return " "
 		}
+		else if (inp_char=="á") { ;		á 'α
+			return "`'α"
+		}
+		else if (inp_char=="Á") { ;		Á 'Α
+			return "`'Α"
+		}
+		else if (inp_char=="é") { ;		é 'ε
+			return "'ε"
+		}
+		else if (inp_char=="É") { ;		É 'Ε
+			return "`'Ε"
+		}
+		else if (inp_char=="í") { ;		í 'ι
+			return "`'ι"
+		}
+		else if (inp_char=="Í") { ;		Í 'Ι
+			return "`'Ι"
+		}
+		else if (inp_char=="ó") { ;		ó 'ο
+			return "`'ο"
+		}
+		else if (inp_char=="Ó") { ;		Ó 'Ο
+			return "`'Ο"
+		}
+		else if (inp_char=="ú") { ;		ú 'θ
+			return "`'θ"
+		}
+		else if (inp_char=="Ú") { ;		Ú 'Θ
+			return "`'Θ"
+		}
+		else if (inp_char=="ý") { ;		ý 'υ
+			return "`'υ"
+		}
+		else if (inp_char=="Ý") { ;		Ý 'Υ
+			return "`'Υ"
+		}
+		else if (inp_char=="ç") { ;		ç 'ψ
+			return "`'ψ"
+		}
+		else if (inp_char=="Ç") { ;		Ç 'Ψ
+			return "`'Ψ"
+		}
+		else if (inp_char=="à") { ;		à `α
+			return "``α"
+		}
+		else if (inp_char=="À") { ;		À `Α
+			return "``Α"
+		}
+		else if (inp_char=="è") { ;		è `ε
+			return "``ε"
+		}
+		else if (inp_char=="È") { ;		È `Ε
+			return "``Ε"
+		}
+		else if (inp_char=="ì") { ;		ì `ι
+			return "``ι"
+		}
+		else if (inp_char=="Ì") { ;		Ì `Ι
+			return "``Ι"
+		}
+		else if (inp_char=="ò") { ;		ò `ο
+			return "``ο"
+		}
+		else if (inp_char=="Ò") { ;		Ò `Ο
+			return "``Ο"
+		}
+		else if (inp_char=="ù") { ;		ù `θ
+			return "``θ"
+		}
+		else if (inp_char=="Ù") { ;		Ù `Θ
+			return "``Θ"
+		}
+		else if (inp_char=="`y") { ;		`y `υ
+			return "``υ"
+		}
+		else if (inp_char=="`Y") { ;		`Y `Υ
+			return "``Y"
+		}
+		else if (inp_char=="ä") { ;		ä "α
+			return """α"
+		}
+		else if (inp_char=="Ä") { ;		Ä "Α
+			return """Α"
+		}
+		else if (inp_char=="ë") { ;		ë "ε
+			return """ε"
+		}
+		else if (inp_char=="Ë") { ;		Ë "Ε
+			return """Ε"
+		}
+		else if (inp_char=="ï") { ;		ï "ι
+			return """ι"
+		}
+		else if (inp_char=="Ï") { ;		Ï "Ι
+			return """Ι"
+		}
+		else if (inp_char=="ö") { ;		ö "ο
+			return """ο"
+		}
+		else if (inp_char=="Ö") { ;		Ö "Ο
+			return """Ο"
+		}
+		else if (inp_char=="ü") { ;		ü "θ
+			return """θ"
+		}
+		else if (inp_char=="Ü") { ;		Ü "Θ
+			return """Θ"
+		}
+		else if (inp_char=="ÿ") { ;		ÿ "υ
+			return """υ"
+		}
+		else if (inp_char=="""Y") { ;	"Y "Υ
+			return """Υ"
+		}
+		else if (inp_char=="â") { ;		â ^α
+			return "^α"
+		}
+		else if (inp_char=="Â") { ;		Â ^Α
+			return "^Α"
+		}
+		else if (inp_char=="ê") { ;		ê ^ε
+			return "^ε"
+		}
+		else if (inp_char=="Ê") { ;		Ê ^Ε
+			return "^Ε"
+		}
+		else if (inp_char=="î") { ;		î ^ι
+			return "^ι"
+		}
+		else if (inp_char=="Î") { ;		Î ^Ι
+			return "^Ι"
+		}
+		else if (inp_char=="ô") { ;		ô ^ο
+			return "^ο"
+		}
+		else if (inp_char=="Ô") { ;		Ô ^Ο
+			return "^Ο"
+		}
+		else if (inp_char=="û") { ;		û ^θ
+			return "^θ"
+		}
+		else if (inp_char=="Û") { ;		Û ^Θ
+			return "^Θ"
+		}
+		else if (inp_char=="^y") { ;		^y ^υ
+			return "^υ"
+		}
+		else if (inp_char=="^Y") { ;		^Y ^Υ
+			return "^Υ"
+		}
+		else if (inp_char=="Wi") { ;		Wi ΐ
+			return "ΐ"
+		}
+		else if (inp_char=="WI") { ;		WI ΅Ι
+			return "΅Ι"
+		}
+		else if (inp_char=="ã") { ;		ã ~α
+			return "~α"
+		}
+		else if (inp_char=="Ã") { ;		Ã ~Α
+			return "~Α"
+		}
+		else if (inp_char=="õ") { ;		õ ~ο
+			return "~ο"
+		}
+		else if (inp_char=="Õ") { ;		Õ ~Ο
+			return "~Ο"
+		}
+		else if (inp_char=="ñ") { ;		ñ ~ν
+			return "~ν"
+		}
+		else if (inp_char=="Ñ") { ;		Ñ ~Ν
+			return "~Ν"
+		}
+		else if (inp_char==Chr(59)) {    ;";"
+			return "``"
+		}
+		else if (inp_char2==Chr(945)) {	   ; '
+			return "`'"
+		}
 		else {
 			return token
 		}
 	}
-}	
-
-
-
-
-; Notes on unicode symbols
-;
-; U+0374 	ʹ 	Greek Numeral Sign 	0371
-; U+0375 	͵ 	Greek Lower Numeral Sign 	0372
-; U+037A 	ͺ 	Greek Ypogegrammeni 	0373
-; U+037B 	ͻ 	Greek Small Reversed Lunate Sigma Symbol 	
-; U+037C 	ͼ 	Greek Small Dotted Lunate Sigma Symbol
-; U+037D 	ͽ 	Greek Small Reversed Dotted Lunate Sigma Symbol
-; U+037E 	; 	Greek Question Mark 	0374
-; U+0384 	΄ 	Greek acute accent (tonos) 	0375
-; U+0385 	΅ 	Greek diaeresis with acute accent 	0376
-; U+0386 	Ά 	Greek Capital Letter A with acute accent 	0377
-; U+0387 	· 	Greek Ano Teleia 	0378
-; U+0388 	Έ 	Greek Capital Letter Epsilon with acute accent 	0379
-; U+0389 	Ή 	Greek Capital Letter Eta with acute accent 	0380
-; U+038A 	Ί 	Greek Capital Letter Iota with acute accent 	0381
-; U+038C 	Ό 	Greek Capital Letter Omicron with acute accent 	0382
-; U+038E 	Ύ 	Greek Capital Letter Upsilon with acute accent 	0383
-; U+038F 	Ώ 	Greek Capital Letter Omega with acute accent 	0384
-; U+0390 	ΐ 	Greek Small Letter Iota with diaeresis and acute accent 	0385
-; U+0391 	Α 	Greek Capital Letter Alpha 	0386
-; U+0392 	Β 	Greek Capital Letter Beta 	0387
-; U+0393 	Γ 	Greek Capital Letter Gamma 	0388
-; U+0394 	Δ 	Greek Capital Letter Delta 	0389
-; U+0395 	Ε 	Greek Capital Letter Epsilon 	0390
-; U+0396 	Ζ 	Greek Capital Letter Zeta 	0391
-; U+0397 	Η 	Greek Capital Letter Eta 	0392
-; U+0398 	Θ 	Greek Capital Letter Theta 	0393
-; U+0399 	Ι 	Greek Capital Letter Iota 	0394
-; U+039A 	Κ 	Greek Capital Letter Kappa 	0395
-; U+039B 	Λ 	Greek Capital Letter Lambda 	0396
-; U+039C 	Μ 	Greek Capital Letter Mu 	0397
-; U+039D 	Ν 	Greek Capital Letter Nu 	0398
-; U+039E 	Ξ 	Greek Capital Letter Xi 	0399
-; U+039F 	Ο 	Greek Capital Letter Omicron 	0400
-; U+03A0 	Π 	Greek Capital Letter Pi 	0401
-; U+03A1 	Ρ 	Greek Capital Letter Rho 	0402
-; U+03A3 	Σ 	Greek Capital Letter Sigma 	0403
-; U+03A4 	Τ 	Greek Capital Letter Tau 	0404
-; U+03A5 	Υ 	Greek Capital Letter Upsilon 	0405
-; U+03A6 	Φ 	Greek Capital Letter Phi 	0406
-; U+03A7 	Χ 	Greek Capital Letter Chi 	0407
-; U+03A8 	Ψ 	Greek Capital Letter Psi 	0408
-; U+03A9 	Ω 	Greek Capital Letter Omega 	0409
-; U+03AA 	Ϊ 	Greek Capital Letter Iota with diaeresis 	0410
-; U+03AB 	Ϋ 	Greek Capital Letter Upsilon with diaeresis 	0411
-; U+03AC 	ά 	Greek Small Letter Alpha with acute accent 	0412
-; U+03AD 	έ 	Greek Small Letter Epsilon with acute accent 	0413
-; U+03AE 	ή 	Greek Small Letter Eta with acute accent 	0414
-; U+03AF 	ί 	Greek Small Letter Iota with acute accent 	0415
-; U+03B0 	ΰ 	Greek Small Letter Upsilon with diaeresis and acute accent 	0416
-; U+03B1 	α 	Greek Small Letter Alpha 	0417
-; U+03B2 	β 	Greek Small Letter Beta 	0418
-; U+03B3 	γ 	Greek Small Letter Gamma 	0419
-; U+03B4 	δ 	Greek Small Letter Delta 	0420
-; U+03B5 	ε 	Greek Small Letter Epsilon 	0421
-; U+03B6 	ζ 	Greek Small Letter Zeta 	0422
-; U+03B7 	η 	Greek Small Letter Eta 	0423
-; U+03B8 	θ 	Greek Small Letter Theta 	0424
-; U+03B9 	ι 	Greek Small Letter Iota 	0425
-; U+03BA 	κ 	Greek Small Letter Kappa 	0426
-; U+03BB 	λ 	Greek Small Letter Lambda 	0427
-; U+03BC 	μ 	Greek Small Letter Mu 	0428
-; U+03BD 	ν 	Greek Small Letter Nu 	0429
-; U+03BE 	ξ 	Greek Small Letter Xi 	0430
-; U+03BF 	ο 	Greek Small Letter Omicron 	0431
-; U+03C0 	π 	Greek Small Letter Pi 	0432
-; U+03C1 	ρ 	Greek Small Letter Rho 	0433
-; U+03C2 	ς 	Greek Small Letter Final Sigma 	0434
-; U+03C3 	σ 	Greek Small Letter Sigma 	0435
-; U+03C4 	τ 	Greek Small Letter Tau 	0436
-; U+03C5 	υ 	Greek Small Letter Upsilon 	0437
-; U+03C6 	φ 	Greek Small Letter Phi 	0438
-; U+03C7 	χ 	Greek Small Letter Chi 	0439
-; U+03C8 	ψ 	Greek Small Letter Psi 	0440
-; U+03C9 	ω 	Greek Small Letter Omega 	0441
-; U+03CA 	ϊ 	Greek Small Letter Iota with diaeresis 	0442
-; U+03CB 	ϋ 	Greek Small Letter Upsilon with diaeresis 	0443
-; U+03CC 	ό 	Greek Small Letter Omicron with acute accent 	0444
-; U+03CD 	ύ 	Greek Small Letter Upsilon with acute accent 	0445
-; U+03CE 	ώ 	Greek Small Letter Omega with acute accent 	0446
-; U+03D0 	ϐ 	Greek Beta Symbol 	
-; U+03D1 	ϑ 	Greek Theta Symbol
-; U+03D2 	ϒ 	Greek Upsilon with hook Symbol
-; U+03D3 	ϓ 	Greek Upsilon with acute and hook Symbol
-; U+03D4 	ϔ 	Greek Upsilon with diaeresis and hook Symbol
-; U+03D5 	ϕ 	Greek Phi Symbol
-; U+03D6 	ϖ 	Greek Pi Symbol
-; U+03D7 	ϗ 	Greek Kai Symbol 	0447
-; U+03D8 	Ϙ 	Greek Letter Qoppa 	
-; U+03D9 	ϙ 	Greek Small Letter Qoppa
-; U+03DA 	Ϛ 	Greek Letter Stigma (letter) 	0448
-; U+03DB 	ϛ 	Greek Small Letter Stigma 	0449
-; U+03DC 	Ϝ 	Greek Letter Digamma 	0450
-; U+03DD 	ϝ 	Greek Small Letter Digamma 	0451
-; U+03DE 	Ϟ 	Greek Letter Koppa 	0452
-; U+03DF 	ϟ 	Greek Small Letter Koppa 	0453
-; U+03E0 	Ϡ 	Greek Letter Sampi 	0454
-; U+03E1 	ϡ
+}
