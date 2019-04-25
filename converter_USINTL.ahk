@@ -3,34 +3,36 @@
 ; Sean Hannon 2020
 ; converter@acrite.ly
 
+;Begin script
 #NoEnv
 SendMode Input
 SetWorkingDir %A_ScriptDir%
 
-Menu, tray, NoStandard
-Menu, tray, DeleteAll
-Menu, tray, add, &About, InfoMenuHandler
-Menu, tray, add  ; Creates a separator line.
-Menu, tray, add, &Exit, Exit0
+;	Create tray menu
+	Menu, tray, NoStandard
+	Menu, tray, DeleteAll
+	Menu, tray, add, &About, InfoMenuHandler
+	Menu, tray, add  ; separator line
+	Menu, tray, add, &Exit, Exit0
 
-TrayTip, ΕΛ<->EN keyboard converter started!,%A_Space%
-SetTimer, RemoveTrayTip, 5000
+	TrayTip, ΕΛ<->EN keyboard converter started!,%A_Space%
+	SetTimer, RemoveTrayTip, 3000
 
-; trigger
-Hotkey, ^g, ProcessEN2GR ;for convert english to greek
-Hotkey, ^e, ProcessGR2EN ;for convert greek to english
-Hotkey, ^+g, Exit0
-Hotkey, ^+e, Exit0
+; 	Trigger keys
+	Hotkey, ^g, ProcessEN2GR ;for convert english to greek
+	Hotkey, ^e, ProcessGR2EN ;for convert greek to english
+	Hotkey, ^+g, Exit0
+	Hotkey, ^+e, Exit0
 return
 
 InfoMenuHandler:
-MsgBox, 0, Converter 2.2, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2020
+	MsgBox, 0, Converter 2.2, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2020
 return
 
 Exit0:
-TrayTip, ΕΛ<->EN keyboard converter closing... ,%A_Space%
-SetTimer, RemoveTrayTip, 1000
-ExitApp 0
+	TrayTip, ΕΛ<->EN keyboard converter closing... ,%A_Space%
+	SetTimer, RemoveTrayTip, 500
+	ExitApp 0
 return
 
 RemoveTrayTip:
@@ -434,166 +436,220 @@ Convertchar_GR2EN(token) {
 ;		DEBUG
 ;		MsgBox current char %inp_char%
 
-		if ( inp_char==  Chr(945))       ;"α")
+		if ( inp_char==  Chr(945)) {      ;"α")
 			return "a"
-		else if (inp_char== Chr(940))    ;"ά" 
+		}
+		else if (inp_char== Chr(940)) {    ;"ά" 
 			return ";a"
-		else if (inp_char== Chr(913))    ;"Α" 
+		}
+		else if (inp_char== Chr(913)) {   ;"Α" 
 			return "A"
-		else if (inp_char== Chr(902))    ;"Ά" 
+		}
+		else if (inp_char== Chr(902)) {   ;"Ά" 
 			return ";A"
-		else if (inp_char== Chr(946))    ;"β" 
+		}
+		else if (inp_char== Chr(946)) {   ;"β" 
 			return "b"
-		else if (inp_char== Chr(914))    ;"Β" 
+		}
+		else if (inp_char== Chr(914)) {   ;"Β" 
 			return "B"
-		else if (inp_char== Chr(947))    ;"γ" 
+		}
+		else if (inp_char== Chr(947)) {   ;"γ" 
 			return "g"
-		else if (inp_char== Chr(915))    ;"Γ" 
+		}
+		else if (inp_char== Chr(915)) {   ;"Γ" 
 			return "G"
-		else if (inp_char== Chr(948))    ;"δ" 
+		}
+		else if (inp_char== Chr(948)) {   ;"δ" 
 			return "d"
-		else if (inp_char== Chr(916))    ;"Δ" 
+		}
+		else if (inp_char== Chr(916)) {   ;"Δ" 
 			return "D"
-		else if (inp_char== Chr(949))    ;"ε" 
+		}
+		else if (inp_char== Chr(949)) {   ;"ε" 
 			return "e"
-		else if (inp_char== Chr(941))    ;"έ" 
+		}
+		else if (inp_char== Chr(941)) {   ;"έ" 
 			return ";e"
-		else if (inp_char== Chr(917))    ;"Ε" 
+		}
+		else if (inp_char== Chr(917)) {   ;"Ε" 
 			return "E"
-		else if (inp_char== Chr(904))    ;"Έ" 
+		}
+		else if (inp_char== Chr(904)) {   ;"Έ" 
 			return ";E"
-		else if (inp_char== Chr(950))    ;"ζ"
+		}
+		else if (inp_char== Chr(950)) {   ;"ζ"
 			return "z"
-		else if (inp_char== Chr(918))    ;"Ζ" 
+		}
+		else if (inp_char== Chr(918)) {   ;"Ζ" 
 			return "Z"
-		else if (inp_char== Chr(951))    ;"η" 
+		}
+		else if (inp_char== Chr(951)) {   ;"η" 
 			return "h"
-		else if (inp_char== Chr(942))    ;"ή" 
+		}
+		else if (inp_char== Chr(942)) {   ;"ή" 
 			return ";h"
-		else if (inp_char== Chr(919))    ;"Η" 
+		}
+		else if (inp_char== Chr(919)) {   ;"Η"
 			return "H"
-		else if (inp_char== Chr(905))    ;"Ή") 
+		}
+		else if (inp_char== Chr(905)) {   ;"Ή"
 			return ";H"
-		else if (inp_char== Chr(952))    ;"θ") 
+		}
+		else if (inp_char== Chr(952)) {   ;"θ"
 			return "u"
-		else if (inp_char== Chr(920))    ;"Θ") 
+		}
+		else if (inp_char== Chr(920)) {   ;"Θ"
 			return "U"
-		else if (inp_char== Chr(953))    ;"ι") 
+		}
+		else if (inp_char== Chr(953)) {   ;"ι"
 			return "i"
-		else if (inp_char== Chr(943))    ;"ί") 
+		}
+		else if (inp_char== Chr(943)) {   ;"ί"
 			return ";i"
-		else if (inp_char== Chr(970))    ;"ϊ") 
+		}
+		else if (inp_char== Chr(970)) {   ;"ϊ"
 			return ":i"
-		else if (inp_char== Chr(912))    ;"ΐ") 
+		}
+		else if (inp_char== Chr(912)) {   ;"ΐ"
 			return "Wi"
-		else if (inp_char== Chr(921))    ;"Ι") 
+		}
+		else if (inp_char== Chr(921)) {   ;"Ι"
 			return "I"
-		else if (inp_char== Chr(906))    ;"Ί") 
+		}
+		else if (inp_char== Chr(906)) {   ;"Ί"
 			return ";I"
-		else if (inp_char== Chr(938))    ;"Ϊ") 
+		}
+		else if (inp_char== Chr(938)) {   ;"Ϊ"
 			return ":I"
-		else if (inp_char== Chr(954))    ;"κ") 
+		}
+		else if (inp_char== Chr(954)) {   ;"κ"
 			return "k"
-		else if (inp_char== Chr(922))    ;"Κ") 
+		}
+		else if (inp_char== Chr(922)) {   ;"Κ"
 			return "K"
-		else if (inp_char== Chr(955))    ;"λ") 
+		}
+		else if (inp_char== Chr(955)) {   ;"λ"
 			return "l"
-		else if (inp_char== Chr(923))    ;"Λ") 
+		}
+		else if (inp_char== Chr(923)) {   ;"Λ"
 			return "L"
-		else if (inp_char== Chr(956))    ;"μ") 
+		}
+		else if (inp_char== Chr(956)) {   ;"μ"
 			return "m"
-		else if (inp_char== Chr(924))    ;"Μ") 
+		}
+		else if (inp_char== Chr(924)) {   ;"Μ"
 			return "M"
-		else if (inp_char== Chr(957))    ;"ν") 
+		}
+		else if (inp_char== Chr(957)) {   ;"ν"
 			return "n"
-		else if (inp_char== Chr(925))    ;"Ν") 
+		}
+		else if (inp_char== Chr(925)) {   ;"Ν"
 			return "N"
-		else if (inp_char== Chr(958))    ;"ξ") 
+		}
+		else if (inp_char== Chr(958)) {   ;"ξ"
 			return "j"
-		else if (inp_char== Chr(926))    ;"Ξ") 
+		}
+		else if (inp_char== Chr(926)) {   ;"Ξ"
 			return "J"
-		else if (inp_char== Chr(959))    ;"ο") 
+		}
+		else if (inp_char== Chr(959)) {   ;"ο"
 			return "o"
-		else if (inp_char== Chr(972))    ;"ό") 
+		}
+		else if (inp_char== Chr(972)) {   ;"ό"
 			return ";o"
-		else if (inp_char== Chr(927))    ;"Ο") 
+		}
+		else if (inp_char== Chr(927)) {   ;"Ο"
 			return "O"
-		else if (inp_char== Chr(908))    ;"Ό") 
+		}
+		else if (inp_char== Chr(908)) {   ;"Ό"
 			return ";O"
-		else if (inp_char== Chr(960))    ;"π") 
+		}
+		else if (inp_char== Chr(960)) {   ;"π"
 			return "p"
-		else if (inp_char== Chr(928))    ;"Π") 
+		}
+		else if (inp_char== Chr(928)) {   ;"Π"
 			return "P"
-		else if (inp_char== Chr(961))    ;"ρ") 
+		}
+		else if (inp_char== Chr(961)) {   ;"ρ"
 			return "r"
-		else if (inp_char== Chr(929))    ;"Ρ") 
+		}
+		else if (inp_char== Chr(929)) {   ;"Ρ"
 			return "R"
-		else if (inp_char== Chr(963))    ;"σ") 
+		}
+		else if (inp_char== Chr(963)) {   ;"σ"
 			return "s"
-		else if (inp_char== Chr(962))    ;"ς") 
+		}
+		else if (inp_char== Chr(962)) {   ;"ς"
 			return "w"
-		else if (inp_char== Chr(931))    ;"Σ") 
+		}
+		else if (inp_char== Chr(931)) {   ;"Σ"
 			return "S"
-		else if (inp_char== Chr(964))    ;"τ") 
+		}
+		else if (inp_char== Chr(964)) {   ;"τ"
 			return "t"
-		else if (inp_char== Chr(932))    ;"Τ") 
+		}
+		else if (inp_char== Chr(932)) {   ;"Τ"
 			return "T"
-		else if (inp_char== Chr(965))    ;"υ") 
+		}
+		else if (inp_char== Chr(965)) {   ;"υ"
 			return "y"
-		else if (inp_char== Chr(973))    ;"ύ") 
+		}
+		else if (inp_char== Chr(973)) {   ;"ύ"
 			return ";y"
-		else if (inp_char== Chr(971))    ;"ϋ") 
+		}
+		else if (inp_char== Chr(971)) {   ;"ϋ"
 			return ":y"
-		else if (inp_char== Chr(944))    ;"ΰ") 
+		}
+		else if (inp_char== Chr(944)) {   ;"ΰ"
 			return "Wy"
-		else if (inp_char== Chr(933))    ;"Υ") 
+		}
+		else if (inp_char== Chr(933)) {   ;"Υ"
 			return "Y"
-		else if (inp_char== Chr(910))    ;"Ύ") 
+		}
+		else if (inp_char== Chr(910)) {   ;"Ύ"
 			return ";Y"
-		else if (inp_char== Chr(939))    ;"Ϋ") 
+		}
+		else if (inp_char== Chr(939)) {   ;"Ϋ"
 			return ":Y"
-		else if (inp_char== Chr(966))    ;"φ") 
+		}
+		else if (inp_char== Chr(966)) {   ;"φ"
 			return "f"
-		else if (inp_char== Chr(934))    ;"Φ") 
+		}
+		else if (inp_char== Chr(934)) {   ;"Φ"
 			return "F"
-		else if (inp_char== Chr(967))    ;"χ") 
+		}
+		else if (inp_char== Chr(967)) {   ;"χ"
 			return "x"
-		else if (inp_char== Chr(935))    ;"Χ") 
+		}
+		else if (inp_char== Chr(935)) {   ;"Χ"
 			return "X"
-		else if (inp_char== Chr(968))    ;"ψ") 
+		}
+		else if (inp_char== Chr(968)) {   ;"ψ"
 			return "c"
-		else if (inp_char== Chr(936))    ;"Ψ") 
+		}
+		else if (inp_char== Chr(936)) {   ;"Ψ"
 			return "C"
-		else if (inp_char== Chr(969))    ;"ω") 
+		}
+		else if (inp_char== Chr(969)) {   ;"ω"
 			return "v"
-		else if (inp_char== Chr(974))    ;"ώ") 
+		}
+		else if (inp_char== Chr(974)) {   ;"ώ"
 			return ";v"
-		else if (inp_char== Chr(937))    ;"Ω") 
+		}
+		else if (inp_char== Chr(937)) {   ;"Ω"
 			return "V"
-		else if (inp_char== Chr(911))    ;"Ώ") 
+		}
+		else if (inp_char== Chr(911)) {   ;"Ώ"
 			return ";V"
-		else if (inp_char== Chr(59))    ;";") 
+		}
+		else if (inp_char== Chr(59))  {  ;";"
 			return "q"
-		else if (inp_char== Chr(58))    ;":") 
+		}
+		else if (inp_char== Chr(58))  {  ;":" 
 			return "Q"
-;		else if (inp_char== Chr(46))    ;".") 
-;			return "."
-;		else if (inp_char== Chr(44))    ;",") 
-;			return ","
-;		else if (inp_char== Chr(47))    ;"/") 
-;			return "/"
-;		else if (inp_char== Chr(47))    ;"/") 
-;			return "\"
-;		else if (inp_char== Chr(946))    ;"[") 
-;			return "["
-;		else if (inp_char== Chr(946))    ;"]") 
-;			return "]"
-;		else if (inp_char== Chr(946))    ;"'") 
-;			return "'"		
-;		else if (inp_char== Chr(946))    ;"\n") 
-;			return ""
-		else if (inp_char==  Chr(32))    ;A_Space) 
-		{
+		}
+		else if (inp_char==  Chr(32)) {   ;A_Space 
 			space := Chr(32)
 			return %space%
 		}
@@ -723,8 +779,8 @@ convertchar_EN2GR(token) {
 				return "Ώ"
 			}
 		    else {
-		    		return "q"
-		    	}
+		    		return convertchar_EN2GR(inp_char2)
+		    }
 		}
 		else if (inp_char==Chr(58)) {   ;":"
 
@@ -741,8 +797,8 @@ convertchar_EN2GR(token) {
 				return "Ϋ"
 			}
 			else {
-					return "Q"
-				}
+					return convertchar_EN2GR(inp_char2)
+			}
 		}
 	    else if (inp_char=="W") {
 		    
@@ -1058,7 +1114,7 @@ convertchar_EN2GR(token) {
 		else if (inp_char=="î") { ;		î ^ι
 			return "^ι"
 		}
-		else if (inp_char=="Î") { ;	Î ^Ι
+		else if (inp_char=="Î") { ;		Î ^Ι
 			return "^Ι"
 		}
 		else if (inp_char=="ô") { ;		ô ^ο
@@ -1102,6 +1158,12 @@ convertchar_EN2GR(token) {
 		}
 		else if (inp_char=="Ñ") { ;		Ñ ~Ν
 			return "~Ν"
+		}
+		else if (inp_char==Chr(59)) {    ;";"
+			return "``"
+		}
+		else if (inp_char2==Chr(945)) {	   ; '
+			return "`'"
 		}
 		else {
 			return token
