@@ -1,5 +1,5 @@
 ﻿; Converter 2.2
-; Script to switch between keyboard inputs (greek/english) 
+; Script to switch between keyboard inputs (greek/englishUS) 
 ; Sean Hannon 2020
 ; converter@acrite.ly
 
@@ -54,7 +54,7 @@ ProcessEN2GR:
 ;			DEBUG
 ;			MsgBox no text selected!
 
-			Send, +{Left 20} ; left arrow
+			Send, +{Left 25} ; left arrow
 	
 ;			select and copy text in active window 
 			Send, ^{x}		; cut
@@ -87,9 +87,9 @@ ProcessEN2GR:
 ;		restore prior clipboard state
 		Clipboard := lastClipBoard
 
-		#Persistent
-		TrayTip, Converted to Greek text!, %A_Space%
-		SetTimer, RemoveTrayTip, 5000
+;		#Persistent
+;		TrayTip, Converted to Greek text!, %A_Space%
+;		SetTimer, RemoveTrayTip, 5000
 	} catch e {
 		ClipBoard := lastClipBoard
 		MsgBox An exception was thrown! `nSpecifically: %e%
@@ -110,7 +110,7 @@ ProcessGR2EN:
 
 		if(ClipBoard = "") ; no text selected, highlight 20 chars
 		{
-			Send, +{Left 20}	; left arrow
+			Send, +{Left 25}	; left arrow
 	
 ;			cut text in active window
 			Send, ^{x}		  	; cut selected
@@ -137,9 +137,9 @@ ProcessGR2EN:
 ;		restore clipboard
 		Clipboard := lastClipBoard
 
-		#Persistent
-		TrayTip, Converted to English text!, %A_Space%
-		SetTimer, RemoveTrayTip, 5000
+;		#Persistent
+;		TrayTip, Converted to English text!, %A_Space%
+;		SetTimer, RemoveTrayTip, 5000
 	} catch e {
 		ClipBoard := lastClipBoard
 		MsgBox An exception was thrown! `nSpecifically: %e%
