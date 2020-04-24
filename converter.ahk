@@ -1,7 +1,7 @@
-﻿; Converter 2.1
+﻿; Converter 2.2
 ; Script to switch between keyboard inputs (greek/english) 
-; Sean Hannon 2015
-; sean@acrite.ly
+; Sean Hannon 2020
+; converter@acrite.ly
 
 #NoEnv
 SendMode Input
@@ -13,128 +13,138 @@ Menu, tray, add, &About, InfoMenuHandler
 Menu, tray, add  ; Creates a separator line.
 Menu, tray, add, &Exit, Exit0
 
-TrayTip, EL<->EN keyboard converter started!,%A_Space%
+TrayTip, ΕΛ<->EN keyboard converter started!,%A_Space%
 SetTimer, RemoveTrayTip, 5000
 
 ; trigger
 Hotkey, ^g, ProcessEN2GR ;for convert english to greek
 Hotkey, ^e, ProcessGR2EN ;for convert greek to english
 Hotkey, ^+g, Exit0
+Hotkey, ^+e, Exit0
 return
 
 InfoMenuHandler:
-MsgBox, 0, Converter 2.1, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2015
+MsgBox, 0, Converter 2.2, Welcome to Greek / English Keyboard converter.`n`nTo convert text, use the following combinations:`n Control-g --> to convert Greek text to English. `nControl-e --> to convert English text to Greek.`n`nPress Control-Shift-g to exit.`n Send bugs to converter@acrite.ly`nEnjoy! -Sean Hannon 2020
 return
 
 Exit0:
-MsgBox, 0, Converter 2.1, Greek / English keyboard converter closing...
+TrayTip, ΕΛ<->EN keyboard converter closing... ,%A_Space%
+SetTimer, RemoveTrayTip, 1000
 ExitApp 0
 return
 
-ProcessGR2EN:
-;   test if text highlighted
-ClipBoard = 
-Send, ^{vk43} ; Ctrl-C
-
-if(ClipBoard = "") ;no text selected, highlight 20 chars
-{
-	count0 := 0
-
-	Loop
-	{
-		if(count0 == 20){
-				;MsgBox exit condition reached...
-				break 
-			}
-
-			Send, +{vk25}
-			count0 := count0+1
-	}
-	;	select and copy text in active window
-	ClipBoard = 
-	Send, ^{vk58}   ; Ctrl-X
-	ClipWait
-	clip0 := ClipBoard
-}
-else
-{
-;	copy selected text in active window
-	ClipBoard = 
-	Send, ^{vk58}   ; Ctrl-X
-	ClipWait
-	clip0 := ClipBoard
-}
-
-;	convert text in clipboard buffer
-newText := ConvertGR2EN(clip0)
-;put new text into buffer
-
-;    return to buffer
-ClipBoard := newText 
-Send, ^{vk56}   ; Ctrl-V
-Send, {vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
-
-;TrayTip, My Title, Multiline`nText, 20, 17
-#Persistent
-TrayTip, Converted to English text!, %A_Space%
-SetTimer, RemoveTrayTip, 5000
+RemoveTrayTip:
+	SetTimer, RemoveTrayTip, Off
+	TrayTip
 return
 
 ProcessEN2GR:
-;   test if text highlighted
-ClipBoard = 
-Send, ^{vk43} ; Ctrl-C
+	try
+	{
+;		save current clipboard contents
+		lastClipBoard := ClipboardAll
+		Clipboard := ""
 
-if(ClipBoard = "") ;no text selected, highlight 20 chars
-{
-count0 := 0
+;		send copy command
+		Send, ^{c} ;vk43} ; Ctrl-C
+		ClipWait, 0.01
 
-Loop
-{
-    if(count0 == 20){
-			;MsgBox exit condition reached...
-			break 
+		if(Clipboard == "") ;no text selected, highlight 20 chars
+		{
+;			DEBUG
+;			MsgBox no text selected!
+
+			Send, +{Left 20} ; left arrow
+
+;			select and copy text in active window 
+			Send, ^{x} ;vk58}   ; Ctrl-X
+			ClipWait, 0.1
+			clip0 := Clipboard
+
+;			DEBUG
+;			MsgBox, Captured characters:`r`n "%clip0%"
+		}
+		else
+		{
+;			cut selected text in active window
+			Send, ^{x} ;vk58}   ; Ctrl-X
+			ClipWait, 0.1
+			clip0 := Clipboard
+
+;			DEBUG
+;			MsgBox, Captured characters:`r`n "%clip0%"
 		}
 
-		Send, +{vk25}
-		count0 := count0+1
-}
-;	select and copy text in active window
-ClipBoard = 
-Send, ^{vk58}   ; Ctrl-X
-ClipWait
-clip0 := ClipBoard
+;		convert text in clipboard buffer
+		newText := ConvertEN2GR(clip0)
 
-}
-else
-{
-;	copy selected text in active window
-	ClipBoard = 
-	Send, ^{vk58}   ; Ctrl-X
-	ClipWait
-	clip0 := ClipBoard
-}
+;		return to buffer
+		Clipboard := newText
+		ClipWait, 0.001
+		Send, ^{v}  ;vk56}   ; Ctrl-V
+		Send, {Left}{Right}  ;vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
 
-;StringLen, count0, clip0 
-;MsgBox, Captured %count0% characters:`r`n "%clip0%"
+;		restore prior clipboard state
+		Clipboard := lastClipBoard
 
-;	convert text in clipboard buffer
-newText := ConvertEN2GR(clip0)
-;put new text into buffer
-
-;    return to buffer
-ClipBoard := newText 
-Send, ^{vk56}   ; Ctrl-V
-Send, {vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
-
-#Persistent
-TrayTip, Converted to Greek text!, %A_Space%
-SetTimer, RemoveTrayTip, 5000
+		#Persistent
+		TrayTip, Converted to Greek text!, %A_Space%
+		SetTimer, RemoveTrayTip, 5000
+	} catch e {
+		ClipBoard := lastClipBoard
+		MsgBox An exception was thrown! `nSpecifically: %e%
+		Exit
+	}
 return
 
-RemoveTrayTip:
-SetTimer, RemoveTrayTip, Off
-TrayTip
+ProcessGR2EN:
+	try
+	{
+;		save current clipboard contents
+		lastClipBoard := ClipboardAll
+		Clipboard := ""
+
+;		test if text highlighted
+		Send, ^{c}  ;vk43} ; Ctrl-C
+		ClipWait, 0.001
+
+		if(ClipBoard = "") ;no text selected, highlight 20 chars
+		{
+			Send, +{Left 20}  ;vk25 20} ; left arrow
+	
+;			select and copy text in active window
+			Send, ^{x}  ;vk58}   ; Ctrl-X
+			ClipWait, 0.1
+			clip0 := ClipBoard
+		}
+		else
+		{
+;			cut selected text in active window
+			Send, ^{x}  ;vk58}   ; Ctrl-X
+			ClipWait, 0.1
+			clip0 := ClipBoard
+		}
+
+
+;		convert text in clipboard buffer
+		newText := ConvertGR2EN(clip0)
+
+;	    return to buffer
+		ClipBoard := newText
+		ClipWait, 0.001
+		Send, ^{v}   ;vk56}   ; Ctrl-V
+		Send, {Left}{Right}   ;vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
+
+		Clipboard := lastClipBoard
+
+		#Persistent
+		TrayTip, Converted to English text!, %A_Space%
+		SetTimer, RemoveTrayTip, 5000
+	} catch e {
+		ClipBoard := lastClipBoard
+		MsgBox An exception was thrown! `nSpecifically: %e%
+		Exit
+	}
 return
 
 ConvertGR2EN(oldText) {
@@ -360,10 +370,12 @@ ConvertEN2GR(oldText) {
 	Loop
 	{
 		if(index0 == count0){
+			;DEBUG
 			;MsgBox exit condition reached...
 			break 
 		}
 			
+		;DEBUG
 		;MsgBox, current parsing step: "%newText%.
 		;if(A_LoopField == " ")
 		;		MsgBox, space!
@@ -660,6 +672,8 @@ convertchar_EN2GR(token) {
 		}
 	}
 }	
+
+
 
 /*
 ; U+0374 	ʹ 	Greek Numeral Sign 	0371
