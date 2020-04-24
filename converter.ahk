@@ -46,18 +46,18 @@ ProcessEN2GR:
 		Clipboard := ""
 
 ;		send copy command
-		Send, ^{c} ;vk43} ; Ctrl-C
+		Send, ^{c} 			; copy
 		ClipWait, 0.01
 
-		if(Clipboard == "") ;no text selected, highlight 20 chars
+		if(Clipboard == "") ; no text selected, highlight 20 chars
 		{
 ;			DEBUG
 ;			MsgBox no text selected!
 
 			Send, +{Left 20} ; left arrow
-
+	
 ;			select and copy text in active window 
-			Send, ^{x} ;vk58}   ; Ctrl-X
+			Send, ^{x}		; cut
 			ClipWait, 0.1
 			clip0 := Clipboard
 
@@ -67,7 +67,7 @@ ProcessEN2GR:
 		else
 		{
 ;			cut selected text in active window
-			Send, ^{x} ;vk58}   ; Ctrl-X
+			Send, ^{x}   ; cut
 			ClipWait, 0.1
 			clip0 := Clipboard
 
@@ -81,8 +81,8 @@ ProcessEN2GR:
 ;		return to buffer
 		Clipboard := newText
 		ClipWait, 0.001
-		Send, ^{v}  ;vk56}   ; Ctrl-V
-		Send, {Left}{Right}  ;vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
+		Send, ^{v}  		   	; paste
+		Send, {Left}{Right}		; Left arrow, right arrow to deselect text... 
 
 ;		restore prior clipboard state
 		Clipboard := lastClipBoard
@@ -105,26 +105,25 @@ ProcessGR2EN:
 		Clipboard := ""
 
 ;		test if text highlighted
-		Send, ^{c}  ;vk43} ; Ctrl-C
+		Send, ^{c}  			; copy
 		ClipWait, 0.001
 
-		if(ClipBoard = "") ;no text selected, highlight 20 chars
+		if(ClipBoard = "") ; no text selected, highlight 20 chars
 		{
-			Send, +{Left 20}  ;vk25 20} ; left arrow
+			Send, +{Left 20}	; left arrow
 	
-;			select and copy text in active window
-			Send, ^{x}  ;vk58}   ; Ctrl-X
+;			cut text in active window
+			Send, ^{x}		  	; cut selected
 			ClipWait, 0.1
 			clip0 := ClipBoard
 		}
 		else
 		{
 ;			cut selected text in active window
-			Send, ^{x}  ;vk58}   ; Ctrl-X
+			Send, ^{x}  	   ; cut
 			ClipWait, 0.1
 			clip0 := ClipBoard
 		}
-
 
 ;		convert text in clipboard buffer
 		newText := ConvertGR2EN(clip0)
@@ -132,9 +131,10 @@ ProcessGR2EN:
 ;	    return to buffer
 		ClipBoard := newText
 		ClipWait, 0.001
-		Send, ^{v}   ;vk56}   ; Ctrl-V
-		Send, {Left}{Right}   ;vk25}{vk27}    ; Left arrow, right arrow to deselect text... 
+		Send, ^{v}   		  ; paste
+		Send, {Left}{Right}   ; left arrow, right arrow to deselect text... 
 
+;		restore clipboard
 		Clipboard := lastClipBoard
 
 		#Persistent
@@ -158,12 +158,7 @@ ConvertGR2EN(oldText) {
 
 	Loop, parse, oldText,
 	{
-		;MsgBox, current parsing step: "%newText%.
-		;if(A_LoopField == " ")
-		;		MsgBox, space!
-		;newText = %newText%%A_LoopField%
 		newChar := Convertchar_GR2EN(A_LoopField)
-		;MsgBox "."%newChar%"."
         newText := newText . newChar
     }
 	
@@ -171,178 +166,177 @@ ConvertGR2EN(oldText) {
 }
 
 Convertchar_GR2EN(inp_char) {
-
-		;MsgBox current char %inp_char%
+;	DEBUG
+;	MsgBox current char %inp_char%
 		
-		if ( inp_char==  Chr(945))         ;"α")
-			return "a"
-		else if (inp_char== Chr(940))    ;"ά" 
-			return ";a"
-		else if (inp_char== Chr(913))    ;"Α" 
-			return "A"
-		else if (inp_char== Chr(902))    ;"Ά" 
-			return ";A"
-		else if (inp_char== Chr(946))    ;"β" 
-			return "b"
-		else if (inp_char== Chr(914))    ;"Β" 
-			return "B"
-		else if (inp_char== Chr(947))    ;"γ" 
-			return "g"
-		else if (inp_char== Chr(915))    ;"Γ" 
-			return "G"
-		else if (inp_char== Chr(948))    ;"δ" 
-			return "d"
-		else if (inp_char== Chr(916))    ;"Δ" 
-			return "D"
-		else if (inp_char== Chr(949))    ;"ε" 
-			return "e"
-		else if (inp_char== Chr(941))    ;"έ" 
-			return ";e"
-		else if (inp_char== Chr(917))    ;"Ε" 
-			return "E"
-		else if (inp_char== Chr(904))    ;"Έ" 
-			return ";E"
-		else if (inp_char== Chr(950))    ;"ζ"
-			return "z"
-		else if (inp_char== Chr(918))    ;"Ζ" 
-			return "Z"
-		else if (inp_char== Chr(951))    ;"η" 
-			return "h"
-		else if (inp_char== Chr(942))    ;"ή" 
-			return ";h"
-		else if (inp_char== Chr(919))    ;"Η" 
-			return "H"
-		else if (inp_char== Chr(905))    ;"Ή") 
-			return ";H"
-		else if (inp_char== Chr(952))    ;"θ") 
-			return "u"
-		else if (inp_char== Chr(920))    ;"Θ") 
-			return "U"
-		else if (inp_char== Chr(953))    ;"ι") 
-			return "i"
-		else if (inp_char== Chr(943))    ;"ί") 
-			return ";i"
-		else if (inp_char== Chr(970))    ;"ϊ") 
-			return ":i"
-		else if (inp_char== Chr(912))    ;"ΐ") 
-			return "Wi"
-		else if (inp_char== Chr(921))    ;"Ι") 
-			return "I"
-		else if (inp_char== Chr(906))    ;"Ί") 
-			return ";I"
-		else if (inp_char== Chr(938))    ;"Ϊ") 
-			return ":I"
-		else if (inp_char== Chr(954))    ;"κ") 
-			return "k"
-		else if (inp_char== Chr(922))    ;"Κ") 
-			return "K"
-		else if (inp_char== Chr(955))    ;"λ") 
-			return "l"
-		else if (inp_char== Chr(923))    ;"Λ") 
-			return "L"
-		else if (inp_char== Chr(956))    ;"μ") 
-			return "m"
-		else if (inp_char== Chr(924))    ;"Μ") 
-			return "M"
-		else if (inp_char== Chr(957))    ;"ν") 
-			return "n"
-		else if (inp_char== Chr(925))    ;"Ν") 
-			return "N"
-		else if (inp_char== Chr(958))    ;"ξ") 
-			return "j"
-		else if (inp_char== Chr(926))    ;"Ξ") 
-			return "J"
-		else if (inp_char== Chr(959))    ;"ο") 
-			return "o"
-		else if (inp_char== Chr(972))    ;"ό") 
-			return ";o"
-		else if (inp_char== Chr(927))    ;"Ο") 
-			return "O"
-		else if (inp_char== Chr(908))    ;"Ό") 
-			return ";O"
-		else if (inp_char== Chr(960))    ;"π") 
-			return "p"
-		else if (inp_char== Chr(928))    ;"Π") 
-			return "P"
-		else if (inp_char== Chr(961))    ;"ρ") 
-			return "r"
-		else if (inp_char== Chr(929))    ;"Ρ") 
-			return "R"
-		else if (inp_char== Chr(963))    ;"σ") 
-			return "s"
-		else if (inp_char== Chr(962))    ;"ς") 
-			return "w"
-		else if (inp_char== Chr(931))    ;"Σ") 
-			return "S"
-		else if (inp_char== Chr(964))    ;"τ") 
-			return "t"
-		else if (inp_char== Chr(932))    ;"Τ") 
-			return "T"
-		else if (inp_char== Chr(965))    ;"υ") 
-			return "y"
-		else if (inp_char== Chr(973))    ;"ύ") 
-			return ";y"
-		else if (inp_char== Chr(971))    ;"ϋ") 
-			return ":y"
-		else if (inp_char== Chr(944))    ;"ΰ") 
-			return "Wy"
-		else if (inp_char== Chr(933))    ;"Υ") 
-			return "Y"
-		else if (inp_char== Chr(910))    ;"Ύ") 
-			return ";Y"
-		else if (inp_char== Chr(939))    ;"Ϋ") 
-			return ":Y"
-		else if (inp_char== Chr(966))    ;"φ") 
-			return "f"
-		else if (inp_char== Chr(934))    ;"Φ") 
-			return "F"
-		else if (inp_char== Chr(967))    ;"χ") 
-			return "x"
-		else if (inp_char== Chr(935))    ;"Χ") 
-			return "X"
-		else if (inp_char== Chr(968))    ;"ψ") 
-			return "c"
-		else if (inp_char== Chr(936))    ;"Ψ") 
-			return "C"
-		else if (inp_char== Chr(969))    ;"ω") 
-			return "v"
-		else if (inp_char== Chr(974))    ;"ώ") 
-			return ";v"
-		else if (inp_char== Chr(937))    ;"Ω") 
-			return "V"
-		else if (inp_char== Chr(911))    ;"Ώ") 
-			return ";V"
-		else if (inp_char== Chr(59))    ;";") 
-			return "q"
-		else if (inp_char== Chr(58))    ;":") 
-			return "Q"
-		;else if (inp_char== Chr(46))    ;".") 
-		;	return "."
-		;else if (inp_char== Chr(44))    ;",") 
-		;	return ","
-		;else if (inp_char== Chr(47))    ;"/") 
-		;	return "/"
-		;else if (inp_char== Chr(47))    ;"/") 
-		;	return "\"
-		;else if (inp_char== Chr(946))    ;"[") 
-		;	return "["
-		;else if (inp_char== Chr(946))    ;"]") 
-		;	return "]"
-		;else if (inp_char== Chr(946))    ;"'") 
-		;	return "'"		
-		;else if (inp_char== Chr(946))    ;"\n") 
-		;	return ""
-	    else if (inp_char==  Chr(32))    ;A_Space) 
-		{
-			space := Chr(32)
-			return %space%
-		}
-		else {  
-			;MsgBox, error %inp_char% not recognized.
-			return inp_char
-			;out_char := inp_char
-		}
-		;return out_char
+	if ( inp_char==  Chr(945))       ;"α")
+		return "a"
+	else if (inp_char== Chr(940))    ;"ά" 
+		return ";a"
+	else if (inp_char== Chr(913))    ;"Α" 
+		return "A"
+	else if (inp_char== Chr(902))    ;"Ά" 
+		return ";A"
+	else if (inp_char== Chr(946))    ;"β" 
+		return "b"
+	else if (inp_char== Chr(914))    ;"Β" 
+		return "B"
+	else if (inp_char== Chr(947))    ;"γ" 
+		return "g"
+	else if (inp_char== Chr(915))    ;"Γ" 
+		return "G"
+	else if (inp_char== Chr(948))    ;"δ" 
+		return "d"
+	else if (inp_char== Chr(916))    ;"Δ" 
+		return "D"
+	else if (inp_char== Chr(949))    ;"ε" 
+		return "e"
+	else if (inp_char== Chr(941))    ;"έ" 
+		return ";e"
+	else if (inp_char== Chr(917))    ;"Ε" 
+		return "E"
+	else if (inp_char== Chr(904))    ;"Έ" 
+		return ";E"
+	else if (inp_char== Chr(950))    ;"ζ"
+		return "z"
+	else if (inp_char== Chr(918))    ;"Ζ" 
+		return "Z"
+	else if (inp_char== Chr(951))    ;"η" 
+		return "h"
+	else if (inp_char== Chr(942))    ;"ή" 
+		return ";h"
+	else if (inp_char== Chr(919))    ;"Η" 
+		return "H"
+	else if (inp_char== Chr(905))    ;"Ή") 
+		return ";H"
+	else if (inp_char== Chr(952))    ;"θ") 
+		return "u"
+	else if (inp_char== Chr(920))    ;"Θ") 
+		return "U"
+	else if (inp_char== Chr(953))    ;"ι") 
+		return "i"
+	else if (inp_char== Chr(943))    ;"ί") 
+		return ";i"
+	else if (inp_char== Chr(970))    ;"ϊ") 
+		return ":i"
+	else if (inp_char== Chr(912))    ;"ΐ") 
+		return "Wi"
+	else if (inp_char== Chr(921))    ;"Ι") 
+		return "I"
+	else if (inp_char== Chr(906))    ;"Ί") 
+		return ";I"
+	else if (inp_char== Chr(938))    ;"Ϊ") 
+		return ":I"
+	else if (inp_char== Chr(954))    ;"κ") 
+		return "k"
+	else if (inp_char== Chr(922))    ;"Κ") 
+		return "K"
+	else if (inp_char== Chr(955))    ;"λ") 
+		return "l"
+	else if (inp_char== Chr(923))    ;"Λ") 
+		return "L"
+	else if (inp_char== Chr(956))    ;"μ") 
+		return "m"
+	else if (inp_char== Chr(924))    ;"Μ") 
+		return "M"
+	else if (inp_char== Chr(957))    ;"ν") 
+		return "n"
+	else if (inp_char== Chr(925))    ;"Ν") 
+		return "N"
+	else if (inp_char== Chr(958))    ;"ξ") 
+		return "j"
+	else if (inp_char== Chr(926))    ;"Ξ") 
+		return "J"
+	else if (inp_char== Chr(959))    ;"ο") 
+		return "o"
+	else if (inp_char== Chr(972))    ;"ό") 
+		return ";o"
+	else if (inp_char== Chr(927))    ;"Ο") 
+		return "O"
+	else if (inp_char== Chr(908))    ;"Ό") 
+		return ";O"
+	else if (inp_char== Chr(960))    ;"π") 
+		return "p"
+	else if (inp_char== Chr(928))    ;"Π") 
+		return "P"
+	else if (inp_char== Chr(961))    ;"ρ") 
+		return "r"
+	else if (inp_char== Chr(929))    ;"Ρ") 
+		return "R"
+	else if (inp_char== Chr(963))    ;"σ") 
+		return "s"
+	else if (inp_char== Chr(962))    ;"ς") 
+		return "w"
+	else if (inp_char== Chr(931))    ;"Σ") 
+		return "S"
+	else if (inp_char== Chr(964))    ;"τ") 
+		return "t"
+	else if (inp_char== Chr(932))    ;"Τ") 
+		return "T"
+	else if (inp_char== Chr(965))    ;"υ") 
+		return "y"
+	else if (inp_char== Chr(973))    ;"ύ") 
+		return ";y"
+	else if (inp_char== Chr(971))    ;"ϋ") 
+		return ":y"
+	else if (inp_char== Chr(944))    ;"ΰ") 
+		return "Wy"
+	else if (inp_char== Chr(933))    ;"Υ") 
+		return "Y"
+	else if (inp_char== Chr(910))    ;"Ύ") 
+		return ";Y"
+	else if (inp_char== Chr(939))    ;"Ϋ") 
+		return ":Y"
+	else if (inp_char== Chr(966))    ;"φ") 
+		return "f"
+	else if (inp_char== Chr(934))    ;"Φ") 
+		return "F"
+	else if (inp_char== Chr(967))    ;"χ") 
+		return "x"
+	else if (inp_char== Chr(935))    ;"Χ") 
+		return "X"
+	else if (inp_char== Chr(968))    ;"ψ") 
+		return "c"
+	else if (inp_char== Chr(936))    ;"Ψ") 
+		return "C"
+	else if (inp_char== Chr(969))    ;"ω") 
+		return "v"
+	else if (inp_char== Chr(974))    ;"ώ") 
+		return ";v"
+	else if (inp_char== Chr(937))    ;"Ω") 
+		return "V"
+	else if (inp_char== Chr(911))    ;"Ώ") 
+		return ";V"
+	else if (inp_char== Chr(59))    ;";") 
+		return "q"
+	else if (inp_char== Chr(58))    ;":") 
+		return "Q"
+;	else if (inp_char== Chr(46))    ;".") 
+;		return "."
+;	else if (inp_char== Chr(44))    ;",") 
+;		return ","
+;	else if (inp_char== Chr(47))    ;"/") 
+;		return "/"
+;	else if (inp_char== Chr(47))    ;"/") 
+;		return "\"
+;	else if (inp_char== Chr(946))    ;"[") 
+;		return "["
+;	else if (inp_char== Chr(946))    ;"]") 
+;		return "]"
+;	else if (inp_char== Chr(946))    ;"'") 
+;		return "'"		
+;	else if (inp_char== Chr(946))    ;"\n") 
+;		return ""
+	else if (inp_char==  Chr(32))    ;A_Space) 
+	{
+		space := Chr(32)
+		return %space%
+	}
+	else {  
+;		DEBUG
+;		MsgBox, error %inp_char% not recognized.
+		return inp_char
+	}
 }
 
 
@@ -370,30 +364,25 @@ ConvertEN2GR(oldText) {
 	Loop
 	{
 		if(index0 == count0){
-			;DEBUG
-			;MsgBox exit condition reached...
+;			DEBUG
+;			MsgBox exit condition reached...
 			break 
 		}
 			
-		;DEBUG
-		;MsgBox, current parsing step: "%newText%.
-		;if(A_LoopField == " ")
-		;		MsgBox, space!
+;		DEBUG
+;		MsgBox, current parsing step: "%newText%.
+;		if(A_LoopField == " ")
+;			MsgBox, space!
 		
-		;newChar := textArray[index0] ;A_LoopField ; Convertchar_EN2GR(A_LoopField)
-
 		if(textArray[index0] ==Chr(58) && textArray[index0+1] !="") {  ;":"
-		    ;MsgBox in the first if
         	newChar := convertchar_EN2GR(textArray[index0] . textArray[index0+1])
         	index0++
     	}
     	else if(textArray[index0] ==Chr(59) && textArray[index0+1] !="") {    ;";"
-		    ;MsgBox in the second if
     		newChar := convertchar_EN2GR(textArray[index0] . textArray[index0+1])
         	index0++
     	}
     	else if(textArray[index0] =="W") {
-		    ;MsgBox in the third if
     		newChar := convertchar_EN2GR(textArray[index0] . textArray[index0+1])
         	index0++
     	}
@@ -418,10 +407,12 @@ convertchar_EN2GR(token) {
 		inp_char2 := SubStr(token,0,1)
 		inp_char := SubStr(token,1,1)
 
-		;MsgBox in the if for 2 %token% %inp_char% %inp_char2%
+;		DEBUG
+;		MsgBox in the if for 2 %token% %inp_char% %inp_char2%
 		
 		if (inp_char==Chr(59)) {    ;";"
-			;MsgBox in the if for semicolon %input_char% %input_char2%
+;			DEBUG
+;			MsgBox in the if for semicolon %input_char% %input_char2%
 		 	if (inp_char2=="a") {
 				return "ά"
 			}
@@ -504,7 +495,8 @@ convertchar_EN2GR(token) {
 	}
 	else {
 	
-		;MsgBox single token to be evaluated: %token%
+;		DEBUG
+;		MsgBox single token to be evaluated: %token%
 	
 		inp_char := token
 
@@ -675,7 +667,9 @@ convertchar_EN2GR(token) {
 
 
 
-/*
+
+; Notes on unicode symbols
+;
 ; U+0374 	ʹ 	Greek Numeral Sign 	0371
 ; U+0375 	͵ 	Greek Lower Numeral Sign 	0372
 ; U+037A 	ͺ 	Greek Ypogegrammeni 	0373
@@ -773,4 +767,3 @@ convertchar_EN2GR(token) {
 ; U+03DF 	ϟ 	Greek Small Letter Koppa 	0453
 ; U+03E0 	Ϡ 	Greek Letter Sampi 	0454
 ; U+03E1 	ϡ
-*/
