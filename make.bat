@@ -1,0 +1,1 @@
+start Ahk2Exe.exe /in "converter.ahk" /out "converter.exe" /icon "resources/converter_icon3_1round.ico" /mpress 1
