@@ -1,3 +1,5 @@
+![](resources/converter_vid.gif)
+
 # converter_pc
 An AutoHotkey Script to convert text typed in the wrong keyboard (Greek and English).
 Protected under GNU GENERAL PUBLIC LICENSE Version 2.0. See licence.txt.
