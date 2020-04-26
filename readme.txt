@@ -1,4 +1,4 @@
-![](converter_vid.gif)
+![](https://github.com/acritely/converter_pc/blob/master/resources/converter_vid.gif)
 
 # converter_pc
 An AutoHotkey Script to convert text typed in the wrong keyboard (Greek and English).
