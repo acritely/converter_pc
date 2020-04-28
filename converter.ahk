@@ -44,14 +44,14 @@ ProcessEN2GR:
 	try
 	{
 ;		save current clipboard contents
-		lastClipBoard := ClipboardAll
-		Clipboard := ""
+		lastClipboard := clipboard
+		clipboard := ""
 
 ;		send copy command
 		Send, ^{c} 			; copy
 		ClipWait, 0.01
 
-		if(Clipboard == "") ; no text selected, highlight 20 chars
+		if(clipboard == "") ; no text selected, highlight 20 chars
 		{
 ;			DEBUG
 ;			MsgBox no text selected!
@@ -61,7 +61,7 @@ ProcessEN2GR:
 ;			select and copy text in active window 
 			Send, ^{x}		; cut
 			ClipWait, 0.1
-			clip0 := Clipboard
+			clip0 := clipboard
 
 ;			DEBUG
 ;			MsgBox, Captured characters:`r`n "%clip0%"
@@ -71,7 +71,7 @@ ProcessEN2GR:
 ;			cut selected text in active window
 			Send, ^{x}   ; cut
 			ClipWait, 0.1
-			clip0 := Clipboard
+			clip0 := clipboard
 
 ;			DEBUG
 ;			MsgBox, Captured characters:`r`n "%clip0%"
@@ -81,19 +81,19 @@ ProcessEN2GR:
 		newText := ConvertEN2GR(clip0)
 
 ;		return to buffer
-		Clipboard := newText
+		clipboard := newText
 		ClipWait, 0.001
 		Send, ^{v}  		   	; paste
 		Send, {Left}{Right}		; Left arrow, right arrow to deselect text... 
 
 ;		restore prior clipboard state
-		Clipboard := lastClipBoard
+		clipboard := lastClipboard
 
 ;		#Persistent
 ;		TrayTip, Converted to Greek text!, %A_Space%
 ;		SetTimer, RemoveTrayTip, 5000
 	} catch e {
-		ClipBoard := lastClipBoard
+		clipboard := lastClipboard
 		MsgBox An exception was thrown! `nSpecifically: %e%
 		Exit
 	}
@@ -103,28 +103,28 @@ ProcessGR2EN:
 	try
 	{
 ;		save current clipboard contents
-		lastClipBoard := ClipboardAll
-		Clipboard := ""
+		lastClipboard := clipboard
+		clipboard := ""
 
 ;		test if text highlighted
 		Send, ^{c}  			; copy
 		ClipWait, 0.001
 
-		if(ClipBoard = "") ; no text selected, highlight 20 chars
+		if(clipboard = "") ; no text selected, highlight 20 chars
 		{
 			Send, +{Left 25}	; left arrow
 	
 ;			cut text in active window
 			Send, ^{x}		  	; cut selected
 			ClipWait, 0.1
-			clip0 := ClipBoard
+			clip0 := clipboard
 		}
 		else
 		{
 ;			cut selected text in active window
 			Send, ^{x}  	   ; cut
 			ClipWait, 0.1
-			clip0 := ClipBoard
+			clip0 := clipboard
 			
 ;			DEBUG
 ;			MsgBox, Captured characters:`r`n "%clip0%"
@@ -134,19 +134,19 @@ ProcessGR2EN:
 		newText := ConvertGR2EN(clip0)
 
 ;	    return to buffer
-		ClipBoard := newText
+		clipboard := newText
 		ClipWait, 0.001
 		Send, ^{v}   		  ; paste
 		Send, {Left}{Right}   ; left arrow, right arrow to deselect text... 
 
 ;		restore clipboard
-		Clipboard := lastClipBoard
+		clipboard := lastClipboard
 
 ;		#Persistent
 ;		TrayTip, Converted to English text!, %A_Space%
 ;		SetTimer, RemoveTrayTip, 5000
 	} catch e {
-		ClipBoard := lastClipBoard
+		clipboard := lastClipboard
 		MsgBox An exception was thrown! `nSpecifically: %e%
 		Exit
 	}
